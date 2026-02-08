@@ -23,7 +23,17 @@
       white-space: pre-wrap;
       font-size: 14px;
     }
-    .btn-group {
+    .input-box {
+      width: 100%;
+      background: #1a1a1a;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 10px;
+      margin: 10px 0;
+      font-family: monospace;
+      height: 80px;
+    }
+    .btn-group, .action-buttons {
       text-align: center;
       margin: 15px 0;
     }
@@ -43,7 +53,7 @@
       min-height: 24px;
     }
     .score { text-align: center; margin: 10px 0; font-size: 1.1rem; }
-    .tip-box, .upsell {
+    .tip-box, .upsell, .tester {
       background: #1a1a1a;
       padding: 15px;
       margin-top: 25px;
@@ -69,25 +79,35 @@
     <div class="result" id="result"></div>
     <div class="score">Score: <span id="scoreNum">0</span>/5</div>
 
-    <!-- Tip Jar -->
+    <!-- Test Your Own Code -->
+    <div class="tester">
+      <h3>🧪 Test Your Own Code</h3>
+      <textarea class="input-box" id="userCode" placeholder="Paste code here..."></textarea>
+      <br>
+      <button onclick="testUserCode()">Is This a Scam?</button>
+      <div class="result" id="userResult"></div>
+    </div>
+
+    <!-- Tip Jar (FIXED) -->
     <div class="tip-box">
-      <p>☕ Built from Android! Support dev with SUI:</p>
-      <a href="https://suilend.finance/send?recipient=0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac&amount=1" target="_blank">
+      <p>☕ Built on Android! Tip in SUI:</p>
+      <a href="https://suiet.app/transfer?recipient=0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac&amount=0.1" target="_blank">
         <button>Send SUI Tip</button>
       </a>
     </div>
 
-    <!-- Upsell (hidden until game over) -->
+    <!-- Waitlist (FIXED) -->
     <div id="upsell" class="upsell hidden">
-      <h3>Want More Challenges?</h3>
-      <p>Get daily new scams + real-code alerts!</p>
-      <button onclick="joinWaitlist()">Notify Me ($1.99/mo)</button>
+      <h3>Want Daily Challenges?</h3>
+      <p>Get new scams + real-code alerts!</p>
+      <a href="https://x.com/fynly_josh" target="_blank">
+        <button>DM Me on X ($1.99/mo)</button>
+      </a>
     </div>
   </div>
 
   <script>
     const SUI_ADDRESS = "0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac";
-
     const snippets = [
       { code: "import pandas as pd\nprint(pd.DataFrame())", real: true },
       { code: "const x = await fetchAI('blockchain_quantum_api');", real: false },
@@ -123,13 +143,26 @@
       setTimeout(showSnippet, 1500);
     }
 
-    function joinWaitlist() {
-      alert("Thanks! I'll DM you when it's live. Follow me on X for updates!");
+    // NEW: Test user-submitted code
+    function testUserCode() {
+      const code = document.getElementById('userCode').value.trim();
+      const resultEl = document.getElementById('userResult');
+      if (!code) {
+        resultEl.textContent = '⚠️ Paste some code!';
+        return;
+      }
+      // Simple heuristic: if it contains "quantum", "metaverse", "fetchAI", etc. → likely scam
+      const scamKeywords = ['quantum', 'metaverse', 'fetchAI', 'blockchain_ai', 'nft', 'web3.token'];
+      const isScam = scamKeywords.some(kw => code.toLowerCase().includes(kw));
+      
+      resultEl.innerHTML = isScam 
+        ? '🤖 <b>SCAM!</b> This smells like AI hype.' 
+        : '👨‍💻 <b>REAL!</b> Looks legit.';
     }
 
-    // Ensure link is clean (no spaces!)
+    // Ensure SUI link is clean
     document.querySelector('.tip-box a').href = 
-      `https://suilend.finance/send?recipient=${SUI_ADDRESS}&amount=1`;
+      `https://suiet.app/transfer?recipient=${SUI_ADDRESS}&amount=0.1`;
 
     showSnippet();
   </script>
