@@ -100,20 +100,21 @@
     const SUI_ADDRESS = "0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac";
 
     function detectLanguage(code) {
-      const c = code;
-      if (/import\s+\w+|def\s+\w+|print\(|f"/.test(c)) return "Python";
-      if (/function\s+\w+|console\.log|=>|\bconst\b/.test(c)) return "JavaScript";
-      if (/public\s+class\s+\w+|System\.out\.println|String\[\]|main\s*\(/.test(c)) return "Java";
-      if (/#include.*<iostream>|std::cout|int main\s*\(/.test(c)) return "C++";
-      if (/fn\s+\w+|let\s+\w+:|println!|\bmut\b/.test(c)) return "Rust";
-      if (/contract\s+\w+|pragma solidity|function\s+\w+\(|mapping\s*\(.*=>/.test(c)) return "Solidity";
-      if (/#include.*<stdio\.h>|printf\s*\(|scanf\s*\(|int main\s*\(/.test(c)) return "C";
-      if (/package main|import "fmt"|func main\s*\(\)/.test(c)) return "Go";
-      if (/using System;|class \w+|static void Main|Console\.WriteLine/.test(c)) return "C#";
-      return "Unknown";
-    }
+  const c = code;
+  // Check most specific first
+  if (/contract\s+\w+|pragma solidity/.test(c)) return "Solidity";
+  if (/package main|import "fmt"|func main\s*\(\)/.test(c)) return "Go";
+  if (/fn\s+\w+|let\s+\w+:|println!|\bmut\b/.test(c)) return "Rust";
+  if (/using System;|class \w+.*\{[^}]*static void Main/.test(c)) return "C#";
+  if (/#include.*<stdio\.h>|#include\s+<stdio\.h>|printf\s*\(|scanf\s*\(|int main\s*\(/.test(c)) return "C";
+  if (/#include.*<iostream>|std::cout|int main\s*\(/.test(c)) return "C++";
+  if (/public\s+class\s+\w+|System\.out\.println|String\[\]/.test(c)) return "Java";
+  if (/import\s+\w+|def\s+\w+|print\(|f"/.test(c)) return "Python";
+  if (/function\s+\w+|console\.log|=>|\bconst\b/.test(c)) return "JavaScript";
+  return "Unknown";
+}
 
-    // --- Validators ---
+// --- Validators ---
     function validatePython(c) {
       if (/{.*}/.test(c) && !/f"/.test(c) && c.includes('print(')) return "❌ Missing 'f' prefix";
       return "✅ Syntax looks valid";
