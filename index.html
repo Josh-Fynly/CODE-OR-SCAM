@@ -31,7 +31,7 @@
       padding: 10px;
       margin: 10px 0;
       font-family: monospace;
-      height: 80px;
+      height: 100px;
     }
     .btn-group, .action-buttons {
       text-align: center;
@@ -60,7 +60,14 @@
       border-radius: 8px;
       text-align: center;
     }
-    .tip-box a { text-decoration: none; }
+    .sui-address-box {
+      background: #000;
+      padding: 10px;
+      font-size: 12px;
+      word-break: break-all;
+      margin: 10px 0;
+      border: 1px dashed #0f0;
+    }
     .hidden { display: none; }
   </style>
 </head>
@@ -79,24 +86,27 @@
     <div class="result" id="result"></div>
     <div class="score">Score: <span id="scoreNum">0</span>/5</div>
 
-    <!-- Test Your Own Code -->
+    <!-- Test ANY Code -->
     <div class="tester">
-      <h3>🧪 Test Your Own Code</h3>
-      <textarea class="input-box" id="userCode" placeholder="Paste code here..."></textarea>
+      <h3>🧪 Test Any Code (All Languages)</h3>
+      <textarea class="input-box" id="userCode" placeholder="Paste Python, JS, Rust, Solidity, Go, etc..."></textarea>
       <br>
       <button onclick="testUserCode()">Is This a Scam?</button>
       <div class="result" id="userResult"></div>
     </div>
 
-    <!-- Tip Jar (FIXED) -->
+    <!-- Tip Jar: Min 0.8 SUI -->
     <div class="tip-box">
       <p>☕ Built on Android! Tip in SUI:</p>
-      <a href="https://suiet.app/transfer?recipient=0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac&amount=0.1" target="_blank">
-        <button>Send SUI Tip</button>
-      </a>
+      <p style="font-size:12px; margin:8px 0;"><strong>Min. tip: 0.8 SUI</strong></p>
+      <p style="font-size:12px;">1. Open your SUI wallet<br>2. Send to this address:</p>
+      <div class="sui-address-box" id="suiAddress">
+        0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac
+      </div>
+      <button onclick="copyAddress()">📋 Copy Address</button>
     </div>
 
-    <!-- Waitlist (FIXED) -->
+    <!-- Waitlist -->
     <div id="upsell" class="upsell hidden">
       <h3>Want Daily Challenges?</h3>
       <p>Get new scams + real-code alerts!</p>
@@ -143,7 +153,7 @@
       setTimeout(showSnippet, 1500);
     }
 
-    // NEW: Test user-submitted code
+    // 🔍 Language-Agnostic Scam Detector
     function testUserCode() {
       const code = document.getElementById('userCode').value.trim();
       const resultEl = document.getElementById('userResult');
@@ -151,18 +161,50 @@
         resultEl.textContent = '⚠️ Paste some code!';
         return;
       }
-      // Simple heuristic: if it contains "quantum", "metaverse", "fetchAI", etc. → likely scam
-      const scamKeywords = ['quantum', 'metaverse', 'fetchAI', 'blockchain_ai', 'nft', 'web3.token'];
-      const isScam = scamKeywords.some(kw => code.toLowerCase().includes(kw));
+
+      // Normalize to lowercase for matching
+      const lower = code.toLowerCase();
+
+      // Red flags: AI/crypto hype buzzwords + fake methods
+      const scamPatterns = [
+        /quantum.*(mine|token|chain)/,
+        /metaverse.*token/,
+        /web3\.metaverse/i,
+        /fetchai|blockchain_ai|ai\.mine/,
+        /nft.*mint.*quantum/,
+        /new\s+\w*crypto\w*\.token/i,
+        /await\s+\w+api\s*\(\s*['"`]blockchain|quantum|metaverse/i,
+        /superai|hyperchain|neuralcoin/i
+      ];
+
+      const isScam = scamPatterns.some(pattern => pattern.test(lower));
       
       resultEl.innerHTML = isScam 
-        ? '🤖 <b>SCAM!</b> This smells like AI hype.' 
-        : '👨‍💻 <b>REAL!</b> Looks legit.';
+        ? '🤖 <b>SCAM!</b> AI-generated hype code.' 
+        : '👨‍💻 <b>REAL!</b> Looks like legit dev work.';
     }
 
-    // Ensure SUI link is clean
-    document.querySelector('.tip-box a').href = 
-      `https://suiet.app/transfer?recipient=${SUI_ADDRESS}&amount=0.1`;
+    function copyAddress() {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(SUI_ADDRESS).then(() => {
+          alert("✅ Copied! Send min. 0.8 SUI via your wallet.");
+        }).catch(() => {
+          fallbackCopy();
+        });
+      } else {
+        fallbackCopy();
+      }
+    }
+
+    function fallbackCopy() {
+      const textArea = document.createElement("textarea");
+      textArea.value = SUI_ADDRESS;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      alert("✅ Copied! Send min. 0.8 SUI via your wallet.");
+    }
 
     showSnippet();
   </script>
