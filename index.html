@@ -15,14 +15,6 @@
     }
     .container { max-width: 600px; margin: 0 auto; }
     h1 { text-align: center; font-size: 2rem; margin-bottom: 10px; }
-    .snippet {
-      background: #1a1a1a;
-      padding: 15px;
-      margin: 15px 0;
-      border-left: 4px solid #0f0;
-      white-space: pre-wrap;
-      font-size: 14px;
-    }
     .input-box {
       width: 100%;
       background: #1a1a1a;
@@ -47,13 +39,15 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    .result {
-      text-align: center;
-      font-weight: bold;
-      min-height: 24px;
+    .result-box {
+      background: #1a1a1a;
+      padding: 15px;
+      margin: 15px 0;
+      border-left: 4px solid #ff6b00;
+      white-space: pre-wrap;
+      font-size: 14px;
     }
-    .score { text-align: center; margin: 10px 0; font-size: 1.1rem; }
-    .tip-box, .upsell, .tester {
+    .tip-box {
       background: #1a1a1a;
       padding: 15px;
       margin-top: 25px;
@@ -68,34 +62,21 @@
       margin: 10px 0;
       border: 1px dashed #0f0;
     }
-    .hidden { display: none; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>CODE OR SCAM?</h1>
-    <p>Is this real code? 👇</p>
+    <p>Paste code to detect language, validity, and AI risk.</p>
     
-    <div class="snippet" id="codeBox"></div>
-    
+    <textarea class="input-box" id="userCode" placeholder="Paste any code here..."></textarea>
     <div class="btn-group">
-      <button onclick="guess(true)">✅ Real</button>
-      <button onclick="guess(false)">❌ Scam</button>
-    </div>
-    
-    <div class="result" id="result"></div>
-    <div class="score">Score: <span id="scoreNum">0</span>/5</div>
-
-    <!-- Test ANY Code -->
-    <div class="tester">
-      <h3>🧪 Test Any Code (All Languages)</h3>
-      <textarea class="input-box" id="userCode" placeholder="Paste Python, JS, Rust, Solidity, Go, etc..."></textarea>
-      <br>
-      <button onclick="testUserCode()">Is This a Scam?</button>
-      <div class="result" id="userResult"></div>
+      <button onclick="analyzeCode()">🔍 Analyze Code</button>
     </div>
 
-    <!-- Tip Jar: Min 0.8 SUI -->
+    <div class="result-box" id="resultBox">Awaiting code...</div>
+
+    <!-- Tip Jar -->
     <div class="tip-box">
       <p>☕ Built on Android! Tip in SUI:</p>
       <p style="font-size:12px; margin:8px 0;"><strong>Min. tip: 0.8 SUI</strong></p>
@@ -106,107 +87,103 @@
       <button onclick="copyAddress()">📋 Copy Address</button>
     </div>
 
-    <!-- Waitlist -->
-    <div id="upsell" class="upsell hidden">
-      <h3>Want Daily Challenges?</h3>
-      <p>Get new scams + real-code alerts!</p>
+    <!-- Premium -->
+    <div class="tip-box">
+      <p>Need deeper analysis? Get premium support:</p>
       <a href="https://x.com/fynly_josh" target="_blank">
-        <button>DM Me on X ($1.99/mo)</button>
+        <button>DM Me on X ($20/mo)</button>
       </a>
     </div>
   </div>
 
   <script>
     const SUI_ADDRESS = "0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac";
-    const snippets = [
-      { code: "import pandas as pd\nprint(pd.DataFrame())", real: true },
-      { code: "const x = await fetchAI('blockchain_quantum_api');", real: false },
-      { code: "for i in range(10): print(i)", real: true },
-      { code: "let cryptoNFT = new Web3.Metaverse.Token();", real: false },
-      { code: "console.log('Hello World');", real: true }
-    ];
 
-    let current = 0;
-    let score = 0;
-
-    function showSnippet() {
-      if (current >= snippets.length) {
-        document.getElementById('codeBox').textContent = '';
-        document.getElementById('result').innerHTML = `<h2>🎯 Final Score: ${score}/5</h2>`;
-        document.getElementById('upsell').classList.remove('hidden');
-        return;
-      }
-      document.getElementById('codeBox').textContent = snippets[current].code;
-      document.getElementById('result').textContent = '';
-    }
-
-    function guess(userGuess) {
-      const correct = snippets[current].real;
-      if (userGuess === correct) {
-        score++;
-        document.getElementById('result').innerHTML = '✅ Correct!';
-      } else {
-        document.getElementById('result').innerHTML = '❌ Scam!';
-      }
-      document.getElementById('scoreNum').textContent = score;
-      current++;
-      setTimeout(showSnippet, 1500);
-    }
-
-    // 🔍 Language-Agnostic Scam Detector
-    function testUserCode() {
-      const code = document.getElementById('userCode').value.trim();
-      const resultEl = document.getElementById('userResult');
-      if (!code) {
-        resultEl.textContent = '⚠️ Paste some code!';
-        return;
-      }
-
-      // Normalize to lowercase for matching
+    function detectLanguage(code) {
       const lower = code.toLowerCase();
+      if (/import\s+\w+|def\s+\w+|print\(|f"/.test(code)) return "Python";
+      if (/function\s+\w+|console\.log|=>/.test(code)) return "JavaScript";
+      if (/fn\s+\w+|let\s+\w+:|println!/.test(code)) return "Rust";
+      if (/#include|<iostream>|int main/.test(code)) return "C++";
+      if (/public\s+class|System\.out\.print/.test(code)) return "Java";
+      if (/contract\s+\w+|pragma solidity|function\s+\w+\(/.test(code)) return "Solidity";
+      return "Unknown";
+    }
 
-      // Red flags: AI/crypto hype buzzwords + fake methods
+    function validatePython(code) {
+      let issues = [];
+      if (code.includes('print("') && !/f"/.test(code) && /{.*}/.test(code)) {
+        issues.push("❌ Missing 'f' prefix for f-string");
+      }
+      if (code.includes('input(') && !code.includes('name = input')) {
+        // too vague, skip
+      }
+      return issues.length ? issues.join("\n") : "✅ Syntax looks valid";
+    }
+
+    function validateJavaScript(code) {
+      let issues = [];
+      if (code.includes("console.log(") && code.split('\n').some(line => line.trim().endsWith("console.log("))) {
+        issues.push("❌ Missing closing parenthesis");
+      }
+      return issues.length ? issues.join("\n") : "✅ Syntax looks valid";
+    }
+
+    function detectAIScams(code) {
+      const lower = code.toLowerCase();
       const scamPatterns = [
-        /quantum.*(mine|token|chain)/,
+        /quantum.*(mine|token)/,
         /metaverse.*token/,
         /web3\.metaverse/i,
-        /fetchai|blockchain_ai|ai\.mine/,
-        /nft.*mint.*quantum/,
-        /new\s+\w*crypto\w*\.token/i,
-        /await\s+\w+api\s*\(\s*['"`]blockchain|quantum|metaverse/i,
-        /superai|hyperchain|neuralcoin/i
+        /fetchai|blockchain_ai/,
+        /superai|hyperchain|neuralcoin/i,
+        /new\s+\w*crypto\w*\.token/i
       ];
+      if (scamPatterns.some(p => p.test(lower))) return "⚠️ High AI scam risk";
+      if (code.split('\n').length === 1 && !/;/g.test(code) && !code.includes('print')) {
+        return "❓ Suspiciously short—likely incomplete";
+      }
+      return "✅ Low AI risk";
+    }
 
-      const isScam = scamPatterns.some(pattern => pattern.test(lower));
+    function analyzeCode() {
+      const code = document.getElementById('userCode').value.trim();
+      const resultEl = document.getElementById('resultBox');
       
-      resultEl.innerHTML = isScam 
-        ? '🤖 <b>SCAM!</b> AI-generated hype code.' 
-        : '👨‍💻 <b>REAL!</b> Looks like legit dev work.';
+      if (!code) {
+        resultEl.innerHTML = "⚠️ Paste some code first!";
+        return;
+      }
+
+      const lang = detectLanguage(code);
+      let validity = "❓ Can't validate";
+      let aiRisk = detectAIScams(code);
+
+      if (lang === "Python") {
+        validity = validatePython(code);
+      } else if (lang === "JavaScript") {
+        validity = validateJavaScript(code);
+      }
+
+      resultEl.innerHTML = 
+        `Language: ${lang}\n` +
+        `Validity: ${validity}\n` +
+        `AI Risk: ${aiRisk}`;
     }
 
     function copyAddress() {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(SUI_ADDRESS).then(() => {
-          alert("✅ Copied! Send min. 0.8 SUI via your wallet.");
-        }).catch(() => {
-          fallbackCopy();
-        });
-      } else {
-        fallbackCopy();
-      }
+      navigator.clipboard?.writeText(SUI_ADDRESS).then(() => {
+        alert("✅ Copied! Send min. 0.8 SUI.");
+      }).catch(() => {
+        const ta = document.createElement("textarea");
+        ta.value = SUI_ADDRESS;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        alert("✅ Copied! Send min. 0.8 SUI.");
+      });
     }
-
-    function fallbackCopy() {
-      const textArea = document.createElement("textarea");
-      textArea.value = SUI_ADDRESS;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-      alert("✅ Copied! Send min. 0.8 SUI via your wallet.");
-    }
-
-    showSnippet();
   </script>
 </body>
 </html>
