@@ -25,7 +25,7 @@
       font-family: monospace;
       height: 100px;
     }
-    .btn-group, .action-buttons {
+    .btn-group {
       text-align: center;
       margin: 15px 0;
     }
@@ -100,47 +100,79 @@
     const SUI_ADDRESS = "0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac";
 
     function detectLanguage(code) {
-      const lower = code.toLowerCase();
-      if (/import\s+\w+|def\s+\w+|print\(|f"/.test(code)) return "Python";
-      if (/function\s+\w+|console\.log|=>/.test(code)) return "JavaScript";
-      if (/fn\s+\w+|let\s+\w+:|println!/.test(code)) return "Rust";
-      if (/#include|<iostream>|int main/.test(code)) return "C++";
-      if (/public\s+class|System\.out\.print/.test(code)) return "Java";
-      if (/contract\s+\w+|pragma solidity|function\s+\w+\(/.test(code)) return "Solidity";
+      const c = code;
+      if (/import\s+\w+|def\s+\w+|print\(|f"/.test(c)) return "Python";
+      if (/function\s+\w+|console\.log|=>|\bconst\b/.test(c)) return "JavaScript";
+      if (/public\s+class\s+\w+|System\.out\.println|String\[\]|main\s*\(/.test(c)) return "Java";
+      if (/#include.*<iostream>|std::cout|int main\s*\(/.test(c)) return "C++";
+      if (/fn\s+\w+|let\s+\w+:|println!|\bmut\b/.test(c)) return "Rust";
+      if (/contract\s+\w+|pragma solidity|function\s+\w+\(|mapping\s*\(.*=>/.test(c)) return "Solidity";
+      if (/#include.*<stdio\.h>|printf\s*\(|scanf\s*\(|int main\s*\(/.test(c)) return "C";
+      if (/package main|import "fmt"|func main\s*\(\)/.test(c)) return "Go";
+      if (/using System;|class \w+|static void Main|Console\.WriteLine/.test(c)) return "C#";
       return "Unknown";
     }
 
-    function validatePython(code) {
-      let issues = [];
-      if (code.includes('print("') && !/f"/.test(code) && /{.*}/.test(code)) {
-        issues.push("❌ Missing 'f' prefix for f-string");
-      }
-      if (code.includes('input(') && !code.includes('name = input')) {
-        // too vague, skip
-      }
-      return issues.length ? issues.join("\n") : "✅ Syntax looks valid";
+    // --- Validators ---
+    function validatePython(c) {
+      if (/{.*}/.test(c) && !/f"/.test(c) && c.includes('print(')) return "❌ Missing 'f' prefix";
+      return "✅ Syntax looks valid";
+    }
+    function validateJavaScript(c) {
+      if (c.includes("console.log(") && !c.includes(");") && c.split('\n').some(l => l.trim().endsWith("console.log("))) 
+        return "❌ Unclosed console.log";
+      return "✅ Syntax looks valid";
+    }
+    function validateJava(c) {
+      if (!/public\s+class/.test(c)) return "❌ Missing 'public class'";
+      if (!/public\s+static\s+void\s+main/.test(c)) return "❌ Missing main method";
+      return "✅ Syntax looks valid";
+    }
+    function validateCpp(c) {
+      if (!/#include/.test(c)) return "❌ Missing #include";
+      if (!/int main\s*\(/.test(c)) return "❌ Missing main()";
+      return "✅ Syntax looks valid";
+    }
+    function validateRust(c) {
+      if (!/fn main\s*\(/.test(c)) return "❌ Missing main function";
+      return "✅ Syntax looks valid";
+    }
+    function validateSolidity(c) {
+      if (!/pragma solidity/.test(c)) return "❌ Missing pragma";
+      if (!/contract\s+\w+/.test(c)) return "❌ Missing contract";
+      return "✅ Syntax looks valid";
+    }
+    function validateC(c) {
+      if (!/#include.*stdio\.h/.test(c) && !/#include\s+<stdio\.h>/.test(c)) return "❌ Missing #include <stdio.h>";
+      if (!/int main\s*\(/.test(c)) return "❌ Missing main()";
+      if (!/printf/.test(c)) return "⚠️ No output (unusual for demo)";
+      return "✅ Syntax looks valid";
+    }
+    function validateGo(c) {
+      if (!/package main/.test(c)) return "❌ Missing 'package main'";
+      if (!/func main\s*\(\)/.test(c)) return "❌ Missing main function";
+      if (!/fmt\.Println/.test(c) && !/fmt\.Printf/.test(c)) return "⚠️ No output statement";
+      return "✅ Syntax looks valid";
+    }
+    function validateCSharp(c) {
+      if (!/class\s+\w+/.test(c)) return "❌ Missing class";
+      if (!/static void Main/.test(c)) return "❌ Missing Main method";
+      if (!/Console\.WriteLine/.test(c)) return "⚠️ No output statement";
+      return "✅ Syntax looks valid";
     }
 
-    function validateJavaScript(code) {
-      let issues = [];
-      if (code.includes("console.log(") && code.split('\n').some(line => line.trim().endsWith("console.log("))) {
-        issues.push("❌ Missing closing parenthesis");
-      }
-      return issues.length ? issues.join("\n") : "✅ Syntax looks valid";
-    }
-
-    function detectAIScams(code) {
-      const lower = code.toLowerCase();
+    function detectAIScams(c) {
+      const lower = c.toLowerCase();
       const scamPatterns = [
-        /quantum.*(mine|token)/,
+        /quantum.*(mine|token|chain)/,
         /metaverse.*token/,
         /web3\.metaverse/i,
-        /fetchai|blockchain_ai/,
+        /fetchai|blockchain_ai|ai\.mine/,
         /superai|hyperchain|neuralcoin/i,
         /new\s+\w*crypto\w*\.token/i
       ];
       if (scamPatterns.some(p => p.test(lower))) return "⚠️ High AI scam risk";
-      if (code.split('\n').length === 1 && !/;/g.test(code) && !code.includes('print')) {
+      if (c.trim().split('\n').length === 1 && !/print|log|cout|println|printf|WriteLine/.test(c)) {
         return "❓ Suspiciously short—likely incomplete";
       }
       return "✅ Low AI risk";
@@ -149,7 +181,6 @@
     function analyzeCode() {
       const code = document.getElementById('userCode').value.trim();
       const resultEl = document.getElementById('resultBox');
-      
       if (!code) {
         resultEl.innerHTML = "⚠️ Paste some code first!";
         return;
@@ -157,13 +188,17 @@
 
       const lang = detectLanguage(code);
       let validity = "❓ Can't validate";
-      let aiRisk = detectAIScams(code);
+      const aiRisk = detectAIScams(code);
 
-      if (lang === "Python") {
-        validity = validatePython(code);
-      } else if (lang === "JavaScript") {
-        validity = validateJavaScript(code);
-      }
+      if (lang === "Python") validity = validatePython(code);
+      else if (lang === "JavaScript") validity = validateJavaScript(code);
+      else if (lang === "Java") validity = validateJava(code);
+      else if (lang === "C++") validity = validateCpp(code);
+      else if (lang === "Rust") validity = validateRust(code);
+      else if (lang === "Solidity") validity = validateSolidity(code);
+      else if (lang === "C") validity = validateC(code);
+      else if (lang === "Go") validity = validateGo(code);
+      else if (lang === "C#") validity = validateCSharp(code);
 
       resultEl.innerHTML = 
         `Language: ${lang}\n` +
@@ -172,17 +207,22 @@
     }
 
     function copyAddress() {
-      navigator.clipboard?.writeText(SUI_ADDRESS).then(() => {
-        alert("✅ Copied! Send min. 0.8 SUI.");
-      }).catch(() => {
-        const ta = document.createElement("textarea");
-        ta.value = SUI_ADDRESS;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
-        alert("✅ Copied! Send min. 0.8 SUI.");
-      });
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(SUI_ADDRESS).then(() => {
+          alert("✅ Copied! Send min. 0.8 SUI.");
+        }).catch(() => fallbackCopy());
+      } else {
+        fallbackCopy();
+      }
+    }
+    function fallbackCopy() {
+      const ta = document.createElement("textarea");
+      ta.value = SUI_ADDRESS;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      alert("✅ Copied! Send min. 0.8 SUI.");
     }
   </script>
 </body>
