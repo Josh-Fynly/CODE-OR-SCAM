@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Code or Scam?</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #0f0f0f;
+      color: #0f0;
+      padding: 15px;
+      margin: 0;
+      line-height: 1.5;
+    }
+    .container { max-width: 600px; margin: 0 auto; }
+    h1 { text-align: center; font-size: 2rem; margin-bottom: 10px; }
+    .snippet {
+      background: #1a1a1a;
+      padding: 15px;
+      margin: 15px 0;
+      border-left: 4px solid #0f0;
+      white-space: pre-wrap;
+      font-size: 14px;
+    }
+    .btn-group {
+      text-align: center;
+      margin: 15px 0;
+    }
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .result {
+      text-align: center;
+      font-weight: bold;
+      min-height: 24px;
+    }
+    .score { text-align: center; margin: 10px 0; font-size: 1.1rem; }
+    .tip-box, .upsell {
+      background: #1a1a1a;
+      padding: 15px;
+      margin-top: 25px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .tip-box a { text-decoration: none; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>CODE OR SCAM?</h1>
+    <p>Is this real code? 👇</p>
+    
+    <div class="snippet" id="codeBox"></div>
+    
+    <div class="btn-group">
+      <button onclick="guess(true)">✅ Real</button>
+      <button onclick="guess(false)">❌ Scam</button>
+    </div>
+    
+    <div class="result" id="result"></div>
+    <div class="score">Score: <span id="scoreNum">0</span>/5</div>
+
+    <!-- Tip Jar -->
+    <div class="tip-box">
+      <p>☕ Built from Android! Support dev with SUI:</p>
+      <a href="https://suiwallet.com/0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac" target="_blank">
+        <button>Send Tip</button>
+      </a>
+    </div>
+
+    <!-- Upsell (hidden until game over) -->
+    <div id="upsell" class="upsell hidden">
+      <h3>Want More Challenges?</h3>
+      <p>Get daily new scams + real-code alerts!</p>
+      <button onclick="joinWaitlist()">Notify Me ($1.99/mo)</button>
+    </div>
+  </div>
+
+  <script>
+    // REPLACE THIS WITH YOUR ACTUAL SUI ADDRESS
+    const SUI_ADDRESS = "0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac";
+
+    const snippets = [
+      { code: "import pandas as pd\nprint(pd.DataFrame())", real: true },
+      { code: "const x = await fetchAI('blockchain_quantum_api');", real: false },
+      { code: "for i in range(10): print(i)", real: true },
+      { code: "let cryptoNFT = new Web3.Metaverse.Token();", real: false },
+      { code: "console.log('Hello World');", real: true }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function showSnippet() {
+      if (current >= snippets.length) {
+        document.getElementById('codeBox').textContent = '';
+        document.getElementById('result').innerHTML = `<h2>🎯 Final Score: ${score}/5</h2>`;
+        document.getElementById('upsell').classList.remove('hidden');
+        return;
+      }
+      document.getElementById('codeBox').textContent = snippets[current].code;
+      document.getElementById('result').textContent = '';
+    }
+
+    function guess(userGuess) {
+      const correct = snippets[current].real;
+      if (userGuess === correct) {
+        score++;
+        document.getElementById('result').innerHTML = '✅ Correct!';
+      } else {
+        document.getElementById('result').innerHTML = '❌ Scam!';
+      }
+      document.getElementById('scoreNum').textContent = score;
+      current++;
+      setTimeout(showSnippet, 1500);
+    }
+
+    function joinWaitlist() {
+      alert("Thanks! I'll DM you when it's live. Follow me on X for updates!");
+      // Later: link to Gumroad or Google Form
+    }
+
+    // Auto-update SUI link
+    document.querySelector('.tip-box a').href = `https://suiwallet.com/${SUI_ADDRESS}`;
+
+    showSnippet();
+  </script>
+</body>
+</html>
