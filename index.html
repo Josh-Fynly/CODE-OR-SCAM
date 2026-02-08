@@ -73,7 +73,7 @@
     <div class="tip-box">
       <p>☕ Built from Android! Support dev with SUI:</p>
       <a href="https://suilend.finance/send?recipient=0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac&amount=1" target="_blank">
-  <button>Send SUI Tip</button>
+        <button>Send SUI Tip</button>
       </a>
     </div>
 
@@ -86,7 +86,6 @@
   </div>
 
   <script>
-    // REPLACE THIS WITH YOUR ACTUAL SUI ADDRESS
     const SUI_ADDRESS = "0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac";
 
     const snippets = [
@@ -126,12 +125,11 @@
 
     function joinWaitlist() {
       alert("Thanks! I'll DM you when it's live. Follow me on X for updates!");
-      // Later: link to Gumroad or Google Form
     }
 
-    // Auto-update SUI link
+    // Ensure link is clean (no spaces!)
     document.querySelector('.tip-box a').href = 
-  `https://suilend.finance/send?recipient=${SUI_ADDRESS}&amount=1`;
+      `https://suilend.finance/send?recipient=${SUI_ADDRESS}&amount=1`;
 
     showSnippet();
   </script>
