@@ -1,28 +1,60 @@
-Code or Scam?
+ Code or Scam? — AI-Generated Code Detector
 
-Can you tell real code from AI-generated hype? Test your dev instincts across **any programming language**—Python, JavaScript, Rust, Solidity, and more!
+> 🔍 A lightweight, browser-based tool that helps developers spot risky AI-generated code — especially hallucinated APIs, fake libraries, and oversimplified demos that fail in real-world use.
 
-👉 Play now: [https://josh-fynly.github.io](https://josh-fynly.github.io)
+[▶️ Try it live](https://code-or-scam.vercel.app)
 
+---
 
- 💡 Features
-- 🧪 Test any code snippet — get instant "Real or Scam?" verdict  
-- 🎮 5-question quiz to challenge your skills  
-- 🌐 100% client-side — no tracking, no backend  
-- 📱 Built on Android (Redmi 15C!)  
+ 🎯 What It Solves
+AI coding assistants often produce code that looks correct but hides critical flaws:
 
- ☕ Support the Dev
-If you enjoy the game, consider tipping min. 0.8 SUI:
+- ❌ Fake APIs like `quantum_mine()` or `web3.metaverse.token`
+  
+- ❌ Overly simplistic demos with no error handling (e.g., `input()` without validation)  
+
+- ❌ "Too clean" snippets that work in isolation but break in production  
+
+This tool helps you **audit code before trusting it — all in your browser, with zero setup.
+
+---
+
+ ✨ Key Features
+
+- 9-Language Support: Python, JavaScript, Java, C, C++, Rust, Go, C#, Solidity
+  
+- AI Risk Detection: Flags hallucinated APIs and demo-only patterns
+  
+- Syntax Validation: Catches common mistakes (e.g., missing `f` in f-strings)
+  
+- 100% Client-Side: No data leaves your device — privacy-first
+ 
+- Mobile-Built: Developed entirely on Android (Redmi 15C)  
+
+> ⚠️ Note: This tool does not flag all AI code — only suspicious or risky patterns. Trivial examples like `print("Hello")` are valid in both human and AI contexts.
+
+---
+
+ ☕ Support This Project
+If you find this tool useful:
+
+ 💰 SUI Tips (min. 0.8 SUI)
 
 0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac
 
 
-1. Open your SUI wallet (Trust Wallet, Sui Wallet, etc.)  
-2. Send at least 0.8 SUI to the address above  
+ 🧠 Premium Mentorship ($20/month)
+For deeper code audits, custom rule sets, or dev mentorship:  
+👉 [DM me on X (@fynly_josh)](https://x.com/fynly_josh)
 
- 🛠️ Built With
-- HTML5 + vanilla JavaScript  
+---
+
+ 🛠️ Tech Stack
+- Vanilla HTML5 + JavaScript  
 - Zero dependencies  
-- Hosted on GitHub Pages  
+- Hosted on Vercel  
+- Built entirely on mobile (no laptop used)
 
-Built by [@fynly_josh](https://x.com/fynly_josh)
+---
+
+Made with precision by [@fynly_josh](https://x.com/fynly_josh) • Backend Developer & ML Engineer 
