@@ -57,4 +57,4 @@ For deeper code audits, custom rule sets, or dev mentorship:
 
 ---
 
-Made with precision by [@fynly_josh](https://x.com/fynly_josh) • Backend Developer & ML Engineer 
+Made with precision by [@fynly_josh](https://x.com/fynly_josh) • Backend Dev 
