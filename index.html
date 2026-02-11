@@ -105,7 +105,6 @@
       if (/package main|import "fmt"|func main\s*\(\)/.test(c)) return "Go";
       if (/fn\s+\w+|let\s+\w+:|println!|\bmut\b/.test(c)) return "Rust";
       if (/using System;|class \w+.*\{[^}]*static void Main/.test(c)) return "C#";
-      // C++ BEFORE C — critical fix
       if (/#include.*<iostream>|std::cout|cout\s+<<|\bnamespace\b/.test(c)) return "C++";
       if (/#include.*<stdio\.h>|#include\s+<stdio\.h>|printf\s*\(|scanf\s*\(|getchar\s*\(/.test(c)) return "C";
       if (/public\s+class\s+\w+|System\.out\.println|String\[\]/.test(c)) return "Java";
@@ -177,20 +176,55 @@
       return "✅ Syntax looks valid";
     }
 
-    function detectAIScams(c) {
-      const lower = c.toLowerCase();
+    // 🔥 ENHANCED AI DETECTION — catches "too perfect" AI code
+    function detectAIScams(code, lang) {
+      const lower = code.toLowerCase();
+      
+      // 1. HALLUCINATED APIs
       const scamPatterns = [
-        /quantum.*(mine|token|chain)/,
-        /metaverse.*token/,
+        /quantum.*(mine|token|chain)/i,
+        /metaverse.*token/i,
         /web3\.metaverse/i,
-        /fetchai|blockchain_ai|ai\.mine/,
+        /fetchai|blockchain_ai|ai\.mine/i,
         /superai|hyperchain|neuralcoin/i,
-        /new\s+\w*crypto\w*\.token/i
+        /new\s+\w*crypto\w*\.token/i,
+        /await\s+\w+api\s*\(\s*['"`](quantum|metaverse|blockchain|ai)/i
       ];
       if (scamPatterns.some(p => p.test(lower))) return "⚠️ High AI scam risk";
-      if (c.trim().split('\n').length === 1 && !/print|log|cout|println|printf|WriteLine|fmt\.Print/.test(c)) {
-        return "❓ Suspiciously short—likely incomplete";
+
+      // 2. LANGUAGE-SPECIFIC AI TELLS
+      if (lang === "Python") {
+        if (/input\s*\(/.test(code) && !/try|except|if|def/.test(code)) {
+          return "⚠️ Overly simplistic — likely AI-generated";
+        }
       }
+      if (lang === "JavaScript") {
+        if (/console\.log\(/.test(code) && code.split('\n').length <= 3 && !/function|class|const/.test(code)) {
+          return "⚠️ Toy example — lacks real-world structure";
+        }
+      }
+      if (lang === "C" || lang === "C++") {
+        if (/printf/.test(code) && !/scanf|fgets|file|error|free|delete|malloc/.test(code)) {
+          return "⚠️ Demo-only output — no input/error handling";
+        }
+      }
+      if (lang === "Java") {
+        if (/System\.out\.println/.test(code) && !/Scanner|BufferedReader|try|catch/.test(code)) {
+          return "⚠️ Lacks real-world I/O or error handling";
+        }
+      }
+      if (lang === "Go") {
+        if (/fmt\.Println/.test(code) && !/os\.Args|bufio|error/.test(code)) {
+          return "⚠️ Minimalist — likely AI-generated";
+        }
+      }
+
+      // 3. SUSPICIOUSLY SHORT
+      const lines = code.trim().split('\n').length;
+      if (lines <= 2 && !/}/.test(code)) {
+        return "❓ Suspiciously short — likely AI-generated";
+      }
+
       return "✅ Low AI risk";
     }
 
@@ -204,7 +238,7 @@
 
       const lang = detectLanguage(code);
       let validity = "❓ Can't validate";
-      const aiRisk = detectAIScams(code);
+      const aiRisk = detectAIScams(code, lang);
 
       if (lang === "Python") validity = validatePython(code);
       else if (lang === "JavaScript") validity = validateJavaScript(code);
