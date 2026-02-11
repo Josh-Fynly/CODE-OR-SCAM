@@ -105,8 +105,9 @@
       if (/package main|import "fmt"|func main\s*\(\)/.test(c)) return "Go";
       if (/fn\s+\w+|let\s+\w+:|println!|\bmut\b/.test(c)) return "Rust";
       if (/using System;|class \w+.*\{[^}]*static void Main/.test(c)) return "C#";
-      if (/#include.*<stdio\.h>|#include\s+<stdio\.h>|printf\s*\(|scanf\s*\(|int main\s*\(/.test(c)) return "C";
-      if (/#include.*<iostream>|std::cout|int main\s*\(/.test(c)) return "C++";
+      // C++ BEFORE C — critical fix
+      if (/#include.*<iostream>|std::cout|cout\s+<<|\bnamespace\b/.test(c)) return "C++";
+      if (/#include.*<stdio\.h>|#include\s+<stdio\.h>|printf\s*\(|scanf\s*\(|getchar\s*\(/.test(c)) return "C";
       if (/public\s+class\s+\w+|System\.out\.println|String\[\]/.test(c)) return "Java";
       if (/import\s+\w+|def\s+\w+|print\(|f"/.test(c)) return "Python";
       if (/function\s+\w+|console\.log|=>|\bconst\b/.test(c)) return "JavaScript";
@@ -120,13 +121,11 @@
     }
 
     function validateJavaScript(c) {
-      // Check unclosed string literals
       const single = (c.match(/'/g) || []).length;
       const double = (c.match(/"/g) || []).length;
       if (single % 2 !== 0 || double % 2 !== 0) {
         return "❌ Unclosed string literal";
       }
-      // Check for unclosed console.log
       if (/console\.log\s*\([^)]*$/.test(c)) {
         return "❌ Unclosed console.log()";
       }
@@ -140,8 +139,9 @@
     }
 
     function validateCpp(c) {
-      if (!/#include/.test(c)) return "❌ Missing #include";
+      if (!/#include.*<iostream>/.test(c)) return "❌ Missing #include <iostream>";
       if (!/int main\s*\(/.test(c)) return "❌ Missing main()";
+      if (!/cout/.test(c)) return "⚠️ No output statement";
       return "✅ Syntax looks valid";
     }
 
@@ -157,7 +157,7 @@
     }
 
     function validateC(c) {
-      if (!/#include.*stdio\.h/.test(c) && !/#include\s+<stdio\.h>/.test(c)) return "❌ Missing #include <stdio.h>";
+      if (!/#include.*<stdio\.h>/.test(c) && !/#include\s+<stdio\.h>/.test(c)) return "❌ Missing #include <stdio.h>";
       if (!/int main\s*\(/.test(c)) return "❌ Missing main()";
       if (!/printf/.test(c)) return "⚠️ No output (unusual for demo)";
       return "✅ Syntax looks valid";
