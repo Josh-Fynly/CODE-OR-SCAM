@@ -100,71 +100,76 @@
     const SUI_ADDRESS = "0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac";
 
     function detectLanguage(code) {
-  const c = code;
-  // Check most specific first
-  if (/contract\s+\w+|pragma solidity/.test(c)) return "Solidity";
-  if (/package main|import "fmt"|func main\s*\(\)/.test(c)) return "Go";
-  if (/fn\s+\w+|let\s+\w+:|println!|\bmut\b/.test(c)) return "Rust";
-  if (/using System;|class \w+.*\{[^}]*static void Main/.test(c)) return "C#";
-  if (/#include.*<stdio\.h>|#include\s+<stdio\.h>|printf\s*\(|scanf\s*\(|int main\s*\(/.test(c)) return "C";
-  if (/#include.*<iostream>|std::cout|int main\s*\(/.test(c)) return "C++";
-  if (/public\s+class\s+\w+|System\.out\.println|String\[\]/.test(c)) return "Java";
-  if (/import\s+\w+|def\s+\w+|print\(|f"/.test(c)) return "Python";
-  if (/function\s+\w+|console\.log|=>|\bconst\b/.test(c)) return "JavaScript";
-  return "Unknown";
-}
+      const c = code;
+      if (/contract\s+\w+|pragma solidity/.test(c)) return "Solidity";
+      if (/package main|import "fmt"|func main\s*\(\)/.test(c)) return "Go";
+      if (/fn\s+\w+|let\s+\w+:|println!|\bmut\b/.test(c)) return "Rust";
+      if (/using System;|class \w+.*\{[^}]*static void Main/.test(c)) return "C#";
+      if (/#include.*<stdio\.h>|#include\s+<stdio\.h>|printf\s*\(|scanf\s*\(|int main\s*\(/.test(c)) return "C";
+      if (/#include.*<iostream>|std::cout|int main\s*\(/.test(c)) return "C++";
+      if (/public\s+class\s+\w+|System\.out\.println|String\[\]/.test(c)) return "Java";
+      if (/import\s+\w+|def\s+\w+|print\(|f"/.test(c)) return "Python";
+      if (/function\s+\w+|console\.log|=>|\bconst\b/.test(c)) return "JavaScript";
+      return "Unknown";
+    }
 
-// --- Validators ---
+    // --- Validators ---
     function validatePython(c) {
       if (/{.*}/.test(c) && !/f"/.test(c) && c.includes('print(')) return "❌ Missing 'f' prefix";
       return "✅ Syntax looks valid";
     }
-    function validateJavaScript(code) {
-  // Check for unclosed strings
-  const singleQuotes = (code.match(/'/g) || []).length;
-  const doubleQuotes = (code.match(/"/g) || []).length;
-  if (singleQuotes % 2 !== 0 || doubleQuotes % 2 !== 0) {
-    return "❌ Unclosed string literal";
-  }
 
-  // Check for obvious console.log errors
-  if (/console\.log\s*\([^)]*$/.test(code)) {
-    return "❌ Unclosed console.log()";
-  }
+    function validateJavaScript(c) {
+      // Check unclosed string literals
+      const single = (c.match(/'/g) || []).length;
+      const double = (c.match(/"/g) || []).length;
+      if (single % 2 !== 0 || double % 2 !== 0) {
+        return "❌ Unclosed string literal";
+      }
+      // Check for unclosed console.log
+      if (/console\.log\s*\([^)]*$/.test(c)) {
+        return "❌ Unclosed console.log()";
+      }
+      return "✅ Syntax looks valid";
+    }
 
-  return "✅ Syntax looks valid";
-}
-function validateJava(c) {
+    function validateJava(c) {
       if (!/public\s+class/.test(c)) return "❌ Missing 'public class'";
       if (!/public\s+static\s+void\s+main/.test(c)) return "❌ Missing main method";
       return "✅ Syntax looks valid";
     }
+
     function validateCpp(c) {
       if (!/#include/.test(c)) return "❌ Missing #include";
       if (!/int main\s*\(/.test(c)) return "❌ Missing main()";
       return "✅ Syntax looks valid";
     }
+
     function validateRust(c) {
       if (!/fn main\s*\(/.test(c)) return "❌ Missing main function";
       return "✅ Syntax looks valid";
     }
+
     function validateSolidity(c) {
       if (!/pragma solidity/.test(c)) return "❌ Missing pragma";
       if (!/contract\s+\w+/.test(c)) return "❌ Missing contract";
       return "✅ Syntax looks valid";
     }
+
     function validateC(c) {
       if (!/#include.*stdio\.h/.test(c) && !/#include\s+<stdio\.h>/.test(c)) return "❌ Missing #include <stdio.h>";
       if (!/int main\s*\(/.test(c)) return "❌ Missing main()";
       if (!/printf/.test(c)) return "⚠️ No output (unusual for demo)";
       return "✅ Syntax looks valid";
     }
+
     function validateGo(c) {
       if (!/package main/.test(c)) return "❌ Missing 'package main'";
       if (!/func main\s*\(\)/.test(c)) return "❌ Missing main function";
       if (!/fmt\.Println/.test(c) && !/fmt\.Printf/.test(c)) return "⚠️ No output statement";
       return "✅ Syntax looks valid";
     }
+
     function validateCSharp(c) {
       if (!/class\s+\w+/.test(c)) return "❌ Missing class";
       if (!/static void Main/.test(c)) return "❌ Missing Main method";
@@ -183,7 +188,7 @@ function validateJava(c) {
         /new\s+\w*crypto\w*\.token/i
       ];
       if (scamPatterns.some(p => p.test(lower))) return "⚠️ High AI scam risk";
-      if (c.trim().split('\n').length === 1 && !/print|log|cout|println|printf|WriteLine/.test(c)) {
+      if (c.trim().split('\n').length === 1 && !/print|log|cout|println|printf|WriteLine|fmt\.Print/.test(c)) {
         return "❓ Suspiciously short—likely incomplete";
       }
       return "✅ Low AI risk";
