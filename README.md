@@ -1,60 +1,70 @@
- Code or Scam? — AI-Generated Code Detector
+Code or Scam? — AI-Generated Code Detector
 
-> 🔍 A lightweight, browser-based tool that helps developers spot risky AI-generated code — especially hallucinated APIs, fake libraries, and oversimplified demos that fail in real-world use.
+🔍 Spot risky AI-generated or fake developer code — all in your browser. Fun, bite-sized, and built for devs, learners, and skeptics.
 
-[▶️ Try it live](https://code-or-scam.vercel.app)
+▶️ Try it Live
 
----
+🎯 What This Tool Solves
+AI coding assistants often produce code that looks correct but hides hidden risks:
 
- 🎯 What It Solves
-AI coding assistants often produce code that looks correct but hides critical flaws:
+❌ Hallucinated APIs — e.g., quantum_mine(), web3.metaverse.token
 
-- ❌ Fake APIs like `quantum_mine()` or `web3.metaverse.token`
-  
-- ❌ Overly simplistic demos with no error handling (e.g., `input()` without validation)  
+❌ Overly simplistic demos with no error handling (input() without validation)
 
-- ❌ "Too clean" snippets that work in isolation but break in production  
+❌ “Too clean” snippets that work in isolation but fail in real projects
 
-This tool helps you **audit code before trusting it — all in your browser, with zero setup.
+Code or Scam? helps you audit code before trusting it — fully in-browser, zero setup, and privacy-first.
 
----
+✨ Key Features
+9-Language Support: Python, JavaScript, Java, C, C++, Rust, Go, C#, Solidity
 
- ✨ Key Features
+AI Risk Detection: Flags hallucinated APIs and demo-only patterns
 
-- 9-Language Support: Python, JavaScript, Java, C, C++, Rust, Go, C#, Solidity
-  
-- AI Risk Detection: Flags hallucinated APIs and demo-only patterns
-  
-- Syntax Validation: Catches common mistakes (e.g., missing `f` in f-strings)
-  
-- 100% Client-Side: No data leaves your device — privacy-first
- 
-- Mobile-Built: Developed entirely on Android (Redmi 15C)  
+Syntax Validation: Catches common mistakes like missing f in f-strings
 
-> ⚠️ Note: This tool does not flag all AI code — only suspicious or risky patterns. Trivial examples like `print("Hello")` are valid in both human and AI contexts.
+100% Client-Side: Your code never leaves your device Mobile-Built: Entirely developed on a Redmi 15C
 
----
+Browser-Friendly: No installs, no dependencies, zero friction
 
- ☕ Support This Project
-If you find this tool useful:
+⚠️ Note: This tool flags suspicious patterns — it doesn’t catch all AI code. Simple snippets like print("Hello") are valid for humans and AI alike.
 
- 💰 SUI Tips (min. 0.8 SUI)
+💻 How It Works (Simplified)
+Paste your code in the browser editor.
+The tool scans for suspicious APIs, demo patterns, and common errors.
+It highlights potential risks so you know what might break in real-world use.
 
+Behind the scenes: A lightweight, vanilla JS engine checks patterns for risky behavior while staying entirely client-side.
+
+☕ Support This Project
+Love the tool? Show your appreciation:
+💰 SUI Tips (min. 0.8 SUI)
 0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac
 
+🧠 Premium Mentorship ($20/month)
+Custom code audits, rule sets, or personalized dev mentorship:
+👉 DM me on X (@fynly_josh)
+Early tippers may get bonus features and early access to future updates!
 
- 🧠 Premium Mentorship ($20/month)
-For deeper code audits, custom rule sets, or dev mentorship:  
-👉 [DM me on X (@fynly_josh)](https://x.com/fynly_josh)
+🛠️ Tech Stack & Engineering Highlights
 
----
+Vanilla HTML5 + JavaScript — zero dependencies
 
- 🛠️ Tech Stack
-- Vanilla HTML5 + JavaScript  
-- Zero dependencies  
-- Hosted on Vercel  
-- Built entirely on mobile (no laptop used)
+100% client-side, privacy-first design
+Multi-language pattern detection for 9 major programming languages
 
----
+Developed entirely on mobile (Redmi 15C) — proof of adaptability
 
-Made with precision by [@fynly_josh](https://x.com/fynly_josh) • Backend Dev 
+Lightweight, modular structure — easy to expand with new detection rules
+
+🎮 Play, Learn, Profit
+This tool is a game, learning aid, and dev helper:
+Test your ability to spot AI vs human code
+
+Audit snippets before production
+
+Support innovation with a tip
+
+
+
+
+Made with precision by @fynly_josh • Backend Dev
