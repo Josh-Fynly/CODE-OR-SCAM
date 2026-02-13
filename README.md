@@ -2,7 +2,9 @@ Code or Scam? — AI-Generated Code Detector
 
 🔍 Spot risky AI-generated or fake developer code — all in your browser. Fun, bite-sized, and built for devs, learners, and skeptics.
 
-▶️ Try it Live
+▶️ Try it Live:
+
+  code-or-scam.vercel.app
 
 🎯 What This Tool Solves
 AI coding assistants often produce code that looks correct but hides hidden risks:
@@ -36,6 +38,7 @@ It highlights potential risks so you know what might break in real-world use.
 Behind the scenes: A lightweight, vanilla JS engine checks patterns for risky behavior while staying entirely client-side.
 
 ☕ Support This Project
+
 Love the tool? Show your appreciation:
 💰 SUI Tips (min. 0.8 SUI)
 0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac
