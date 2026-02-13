@@ -29,6 +29,7 @@ Browser-Friendly: No installs, no dependencies, zero friction
 ⚠️ Note: This tool flags suspicious patterns — it doesn’t catch all AI code. Simple snippets like print("Hello") are valid for humans and AI alike.
 
 💻 How It Works (Simplified)
+
 Paste your code in the browser editor.
 The tool scans for suspicious APIs, demo patterns, and common errors.
 It highlights potential risks so you know what might break in real-world use.
@@ -58,6 +59,7 @@ Developed entirely on mobile (Redmi 15C) — proof of adaptability
 Lightweight, modular structure — easy to expand with new detection rules
 
 🎮 Play, Learn, Profit
+
 This tool is a game, learning aid, and dev helper:
 Test your ability to spot AI vs human code
 
