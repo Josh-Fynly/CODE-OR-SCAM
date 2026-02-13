@@ -39,7 +39,9 @@ Behind the scenes: A lightweight, vanilla JS engine checks patterns for risky be
 ☕ Support This Project
 
 Love the tool? Show your appreciation:
+
 💰 SUI Tips (min. 0.8 SUI)
+
 0x9a9aa7ed44a61edf8361d1d24c77dc4e5d0140e2fa02f01c2ae1efa090d855ac
 
 🧠 Premium Mentorship ($20/month)
